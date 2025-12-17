@@ -1,0 +1,83 @@
+#!/bin/bash
+
+echo "Bienvenido al buscador de máquinas HTB!"
+echo "Uso:"
+echo "-u -> Sincronicar listado de máquinas en local con listado en nube"
+echo "-m -> Buscar por nombre de máquina"
+echo "-i -> Buscar por IP de máquina"
+echo "-d -> Buscar por la dificultad de la máquina"
+echo "-o -> Buscar por sistema operativo de la máquina"
+echo "-s -> Buscar por skills que se entrenan en la máquina"
+echo "-y -> Obtener link de resolución de la máquina"
+echo "-h -> Mostrar este panel de ayuda"
+
+# variables globales
+flags=(0 0 0 0 0 0 0 0)
+
+# funciones
+function actualizarArchivos() {
+    echo "Sincronizando listado de máquinas..."
+    # Lógica para sincronizar listado de máquinas
+    curl https://htbmachines.github.io/bundle.js | js-beautify > machines_temp.js
+
+    md5_original="$(md5sum bundle.js | awk '{print $1}')"
+    md5_temp="$(md5sum machines_temp.js | awk '{print $1}')"
+    #echo "MD5 Original: $md5_original"
+    #echo "MD5 Temp: $md5_temp"
+
+    if [[ $md5_original != $md5_temp ]]; then
+        rm bundle.js
+        mv machines_temp.js bundle.js
+        echo "Listado de máquinas actualizado."
+    else
+        rm machines_temp.js
+        echo "El listado de máquinas ya se encontraba actualizado."
+    fi      
+}
+
+function buscarMaquinaPorNombre() {
+    local name="$1"
+    echo "Buscando máquina por nombre: $name"
+    # Lógica para buscar máquina por nombre
+    cat ./bundle.js | awk "/name: \"$name\"/,/resuelta:/" | grep -vE "id:|sku:|resuelta:" | tr -d '"' | tr -d ',' | sed 's/^ *//'
+}
+
+function buscarMaquinaPorIp() {
+    local ip="$1"
+    cat ./bundle.js | grep -B 3 -A 6 "ip: \"$ip\"" | grep -vE "id:|sku:|resuelta:" | tr -d '"' | tr -d ',' | sed 's/^ *//'
+}
+
+# leer parámetros
+while getopts "um:i:d:o:s:y:h" opcion; do
+    case $opcion in
+        u) flags[0]=1 ;;
+        m) flags[1]=1
+              machine_name=$OPTARG ;;
+        i) flags[2]=1
+              machine_ip=$OPTARG ;;
+        d) flags[3]=1
+              machine_difficulty=$OPTARG ;;
+        o) flags[4]=1
+              machine_os=$OPTARG ;;
+        s) flags[5]=1
+              machine_skills=$OPTARG ;;
+        y) flags[6]=1
+              machine_link=$OPTARG ;;
+        h) flags[7]=1 ;;
+        *) echo "Opción inválida" ;;
+    esac
+done
+
+# ejecutar funcionalidades según flags
+echo "Flags seleccionados: ${flags[@]}"
+
+if [[ ${flags[0]} -eq 1 ]]; then
+    actualizarArchivos
+fi
+if [[ ${flags[1]} -eq 1 ]]; then
+    buscarMaquinaPorNombre $machine_name
+fi
+if [[ ${flags[2]} -eq 1 ]]; then
+    buscarMaquinaPorIp $machine_ip
+fi
+
