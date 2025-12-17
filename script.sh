@@ -47,6 +47,13 @@ function buscarMaquinaPorIp() {
     cat ./bundle.js | grep -B 3 -A 6 "ip: \"$ip\"" | grep -vE "id:|sku:|resuelta:" | tr -d '"' | tr -d ',' | sed 's/^ *//'
 }
 
+function buscarMaquinaPorDificultad() {
+    echo "Buscando máquinas por dificultad..."
+    local difficulty="$1"
+    echo "Dificultad seleccionada: $difficulty"
+    cat ./bundle.js | grep "dificultad: \"$difficulty\"" -B 5 -A 4 | grep -vE "id:|sku:|resuelta:" | tr -d '"' | tr -d ','
+}
+
 # leer parámetros
 while getopts "um:i:d:o:s:y:h" opcion; do
     case $opcion in
@@ -80,4 +87,10 @@ fi
 if [[ ${flags[2]} -eq 1 ]]; then
     buscarMaquinaPorIp $machine_ip
 fi
+if [[ ${flags[3]} -eq 1 ]]; then
+    buscarMaquinaPorDificultad $machine_difficulty
+fi
 
+# To do:
+#- operaciones por separado
+#- OS + difficulty
