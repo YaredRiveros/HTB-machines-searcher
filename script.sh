@@ -68,6 +68,12 @@ function buscarMaquinaPorSkills(){
     cat ./bundle.js | grep skills -B 6 -A 2| grep "${skills}" -i -B 6 -A 2 | grep -vE "id:|sku:"
 }
 
+function obtenerEnclaceYoutube(){
+    echo "Obteniendo enlace de YouTube..."
+    local name="$1"
+    cat ./bundle.js | grep -i "${name}" -A 8 | grep "youtube:" | awk '{print $2}' | tr -d '"' | tr -d ','
+}
+
 # leer parámetros
 while getopts "um:i:d:o:s:y:h" opcion; do
     case $opcion in
@@ -83,7 +89,7 @@ while getopts "um:i:d:o:s:y:h" opcion; do
         s) flags[5]=1
               machine_skills=$OPTARG ;;
         y) flags[6]=1
-              machine_link=$OPTARG ;;
+              machine_name=$OPTARG ;;
         h) flags[7]=1 ;;
         *) echo "Opción inválida" ;;
     esac
@@ -110,7 +116,9 @@ fi
 if [[ ${flags[5]} -eq 1 ]]; then
     buscarMaquinaPorSkills $machine_skills
 fi
-
+if [[ ${flags[6]} -eq 1 ]]; then
+    obtenerEnclaceYoutube $machine_name
+fi
 # To do:
 #- operaciones por separado
 #- OS + difficulty
