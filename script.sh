@@ -107,7 +107,8 @@ done
 # ejecutar funcionalidades según flags
 echo "Flags seleccionados: ${flags[@]}"
 
-if [[ ${flags[3]} && ${flags[4]} ]]; then
+if [[ ${flags[3]} -eq 1 && ${flags[4]} -eq 1 ]]; then
+    echo "hola"
     buscarMaquinaPorOsYdificultad $machine_os $machine_difficulty
 elif [[ ${flags[0]} -eq 1 ]]; then
     actualizarArchivos
