@@ -74,6 +74,15 @@ function obtenerEnclaceYoutube(){
     cat ./bundle.js | grep -i "${name}" -A 8 | grep "youtube:" | awk '{print $2}' | tr -d '"' | tr -d ','
 }
 
+function buscarMaquinaPorOsYdificultad(){
+    echo "Buscando máquinas por sistema operativo y dificultad..."
+    local os="$1"
+    local difficulty="$2"
+    echo "Sistema operativo seleccionado: $os"
+    echo "Dificultad seleccionada: $difficulty"
+    cat ./bundle.js | grep "so: \"${os}\"" -B 5 -A5 -i | grep "dificultad: \"${difficulty}\"" -i -B 5 -A 5 | grep -vE "resuelta:|id:|sku:|lf.push" | tr -d '"' | tr -d ','
+}
+
 # leer parámetros
 while getopts "um:i:d:o:s:y:h" opcion; do
     case $opcion in
@@ -98,28 +107,23 @@ done
 # ejecutar funcionalidades según flags
 echo "Flags seleccionados: ${flags[@]}"
 
-if [[ ${flags[0]} -eq 1 ]]; then
+if [[ ${flags[3]} && ${flags[4]} ]]; then
+    buscarMaquinaPorOsYdificultad $machine_os $machine_difficulty
+elif [[ ${flags[0]} -eq 1 ]]; then
     actualizarArchivos
-fi
-if [[ ${flags[1]} -eq 1 ]]; then
+elif [[ ${flags[1]} -eq 1 ]]; then
     buscarMaquinaPorNombre $machine_name
-fi
-if [[ ${flags[2]} -eq 1 ]]; then
+elif [[ ${flags[2]} -eq 1 ]]; then
     buscarMaquinaPorIp $machine_ip
-fi
-if [[ ${flags[3]} -eq 1 ]]; then
+elif [[ ${flags[3]} -eq 1 ]]; then
     buscarMaquinaPorDificultad $machine_difficulty
-fi
-if [[ ${flags[4]} -eq 1 ]]; then
+elif [[ ${flags[4]} -eq 1 ]]; then
     buscarMaquinaPorOs $machine_os
-fi
-if [[ ${flags[5]} -eq 1 ]]; then
+elif [[ ${flags[5]} -eq 1 ]]; then
     buscarMaquinaPorSkills $machine_skills
-fi
-if [[ ${flags[6]} -eq 1 ]]; then
+elif [[ ${flags[6]} -eq 1 ]]; then
     obtenerEnclaceYoutube $machine_name
-fi
-if [[ ${flags[7]} -eq 1 ]]; then
+elif [[ ${flags[7]} -eq 1 ]]; then
     echo "Uso:"
     echo "-u -> Sincronicar listado de máquinas en local con listado en nube"
     echo "-m -> Buscar por nombre de máquina"
@@ -131,5 +135,4 @@ if [[ ${flags[7]} -eq 1 ]]; then
     echo "-h -> Mostrar este panel de ayuda"
 fi
 # To do:
-#- operaciones por separado
 #- OS + difficulty
