@@ -54,6 +54,13 @@ function buscarMaquinaPorDificultad() {
     cat ./bundle.js | grep "dificultad: \"$difficulty\"" -B 5 -A 4 | grep -vE "id:|sku:|resuelta:" | tr -d '"' | tr -d ','
 }
 
+function buscarMaquinaPorOs(){
+    echo "Buscando máquinas por sistema operativo..."
+    local os="$1"
+    echo "Sistema operativo seleccionado: $os"
+    cat ./bundle.js | grep "so: \"${os}\"" -B 4 -A 5 | grep -vE "id:|sku:|resuelta:" | tr -d ',' | tr -d '"'
+}
+
 # leer parámetros
 while getopts "um:i:d:o:s:y:h" opcion; do
     case $opcion in
@@ -89,6 +96,9 @@ if [[ ${flags[2]} -eq 1 ]]; then
 fi
 if [[ ${flags[3]} -eq 1 ]]; then
     buscarMaquinaPorDificultad $machine_difficulty
+fi
+if [[ ${flags[4]} -eq 1 ]]; then
+    buscarMaquinaPorOs $machine_os
 fi
 
 # To do:
