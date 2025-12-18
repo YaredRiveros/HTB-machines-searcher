@@ -119,6 +119,17 @@ fi
 if [[ ${flags[6]} -eq 1 ]]; then
     obtenerEnclaceYoutube $machine_name
 fi
+if [[ ${flags[7]} -eq 1 ]]; then
+    echo "Uso:"
+    echo "-u -> Sincronicar listado de máquinas en local con listado en nube"
+    echo "-m -> Buscar por nombre de máquina"
+    echo "-i -> Buscar por IP de máquina"
+    echo "-d -> Buscar por la dificultad de la máquina"
+    echo "-o -> Buscar por sistema operativo de la máquina"
+    echo "-s -> Buscar por skills que se entrenan en la máquina"
+    echo "-y -> Obtener link de resolución de la máquina"
+    echo "-h -> Mostrar este panel de ayuda"
+fi
 # To do:
 #- operaciones por separado
 #- OS + difficulty
