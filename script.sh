@@ -61,6 +61,13 @@ function buscarMaquinaPorOs(){
     cat ./bundle.js | grep "so: \"${os}\"" -B 4 -A 5 | grep -vE "id:|sku:|resuelta:" | tr -d ',' | tr -d '"'
 }
 
+function buscarMaquinaPorSkills(){
+    echo "Buscando máquinas por skills..."
+    local skills="$1"
+    echo "Skill seleccionada: $skills"
+    cat ./bundle.js | grep skills -B 6 -A 2| grep "${skills}" -i -B 6 -A 2 | grep -vE "id:|sku:"
+}
+
 # leer parámetros
 while getopts "um:i:d:o:s:y:h" opcion; do
     case $opcion in
@@ -99,6 +106,9 @@ if [[ ${flags[3]} -eq 1 ]]; then
 fi
 if [[ ${flags[4]} -eq 1 ]]; then
     buscarMaquinaPorOs $machine_os
+fi
+if [[ ${flags[5]} -eq 1 ]]; then
+    buscarMaquinaPorSkills $machine_skills
 fi
 
 # To do:
